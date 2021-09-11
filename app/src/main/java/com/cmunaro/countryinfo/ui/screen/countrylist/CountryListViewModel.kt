@@ -31,11 +31,12 @@ class CountryListViewModel(
 
 private fun List<GetCountriesQuery.Country>?.toListOfCountryListEntry(): List<CountryListEntry> =
     this
-        ?.map { CountryListEntry(it.name) }
+        ?.map { CountryListEntry(it.name, it.code) }
         ?: emptyList()
 
 data class CountryListEntry(
-    val name: String
+    val name: String,
+    val countryCode: String
 )
 
 data class CountryListState(
