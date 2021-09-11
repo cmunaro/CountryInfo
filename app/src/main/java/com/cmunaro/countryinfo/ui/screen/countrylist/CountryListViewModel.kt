@@ -1,20 +1,20 @@
 package com.cmunaro.countryinfo.ui.screen.countrylist
 
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.exception.ApolloException
 import com.cmunaro.countryinfo.GetCountriesQuery
 import com.cmunaro.countryinfo.data.CountriesService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class CountryListViewModel(
     private val countriesService: CountriesService
 ) : ViewModel() {
-    private val _state = mutableStateOf(CountryListScreenState())
-    val state: State<CountryListScreenState> = _state
+    private val _state = MutableStateFlow(CountryListScreenState())
+    val state: StateFlow<CountryListScreenState> = _state
     private var countries: List<GetCountriesQuery.Country> = emptyList()
 
     fun fetchCountries() = viewModelScope.launch {
@@ -106,7 +106,7 @@ data class ContinentFilterEntry(
 
 @Stable
 data class CountryListScreenState(
-    val isLoading: Boolean = true,
+    val isLoading: Boolean = false,
     val countries: List<CountryListEntry> = emptyList(),
     val filterName: String = "",
     val continentFilters: List<ContinentFilterEntry> = emptyList()
