@@ -10,7 +10,11 @@ import com.cmunaro.countryinfo.ui.shared.Loading
 fun CountryListScreen(viewModel: CountryListViewModel) {
     val countryListScreenState: CountryListScreenState by viewModel.state
     Column {
-        NameInputFilter(filter = countryListScreenState.filter, onChange = viewModel::changeFilter)
+        NameInputFilter(
+            filter = countryListScreenState.filter,
+            onChange = viewModel::changeFilter,
+            onClear = viewModel::clearFilter
+        )
         CountryList(items = countryListScreenState.countries)
     }
     Loading(isVisible = countryListScreenState.isLoading)

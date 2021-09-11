@@ -40,6 +40,15 @@ class CountryListViewModel(
                 .filter { it.name.startsWith(filter, ignoreCase = true) }
         )
     }
+
+    @Stable
+    fun clearFilter() {
+        _state.value = _state.value.copy(
+            filter = "",
+            countries = countries
+                .toListOfCountryListEntry()
+        )
+    }
 }
 
 private fun List<GetCountriesQuery.Country>?.toListOfCountryListEntry(): List<CountryListEntry> =
