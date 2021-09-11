@@ -16,11 +16,13 @@ class CountryListViewModel(
     private val _state = mutableStateOf(CountryListScreenState())
     val state: State<CountryListScreenState> = _state
     private var countries: List<GetCountriesQuery.Country> = emptyList()
+    private var continents: List<String> = emptyList()
 
     fun fetchCountries() = viewModelScope.launch {
         _state.value = _state.value.copy(isLoading = true)
         val fetchedCountries = try {
             countries = countriesService.getCountries() ?: emptyList()
+            continents = countries.map { it.continent.name }.distinct()
             countries.toListOfCountryListEntry()
         } catch (exception: ApolloException) {
             emptyList()
@@ -32,19 +34,20 @@ class CountryListViewModel(
     }
 
     @Stable
-    fun changeFilter(filter: String) {
+    fun changeNameFilter(filter: String) {
         _state.value = _state.value.copy(
-            filter = filter,
+            filterName = filter,
             countries = countries
                 .toListOfCountryListEntry()
                 .filter { it.name.startsWith(filter, ignoreCase = true) }
+                .sortedBy { it.name }
         )
     }
 
     @Stable
-    fun clearFilter() {
+    fun clearNameFilter() {
         _state.value = _state.value.copy(
-            filter = "",
+            filterName = "",
             countries = countries
                 .toListOfCountryListEntry()
         )
@@ -56,6 +59,7 @@ private fun List<GetCountriesQuery.Country>?.toListOfCountryListEntry(): List<Co
         ?.map { CountryListEntry(it.name, it.code) }
         ?: emptyList()
 
+@Stable
 data class CountryListEntry(
     val name: String,
     val countryCode: String
@@ -65,5 +69,6 @@ data class CountryListEntry(
 data class CountryListScreenState(
     val isLoading: Boolean = true,
     val countries: List<CountryListEntry> = emptyList(),
-    val filter: String = ""
+    val filterName: String = "",
+    val filterContinent: List<String> = emptyList()
 )

@@ -11,9 +11,9 @@ fun CountryListScreen(viewModel: CountryListViewModel) {
     val countryListScreenState: CountryListScreenState by viewModel.state
     Column {
         NameInputFilter(
-            filter = countryListScreenState.filter,
-            onChange = viewModel::changeFilter,
-            onClear = viewModel::clearFilter
+            filter = countryListScreenState.filterName,
+            onChange = viewModel::changeNameFilter,
+            onClear = viewModel::clearNameFilter
         )
         CountryList(items = countryListScreenState.countries)
     }
