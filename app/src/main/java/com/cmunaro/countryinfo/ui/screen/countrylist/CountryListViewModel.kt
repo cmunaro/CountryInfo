@@ -17,6 +17,10 @@ class CountryListViewModel(
     val state: StateFlow<CountryListScreenState> = _state
     private var countries: List<GetCountriesQuery.Country> = emptyList()
 
+    init {
+        fetchCountries()
+    }
+
     fun fetchCountries() = viewModelScope.launch {
         _state.value = _state.value.copy(isLoading = true)
         val fetchedCountries = try {

@@ -5,22 +5,25 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.cmunaro.countryinfo.ui.screen.countrylist.COUNTRY_LIST_PATH
 import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListScreen
-import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListViewModel
 import com.cmunaro.countryinfo.ui.theme.CountryInfoTheme
-import org.koin.android.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
-    private val viewModel: CountryListViewModel by viewModel()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        viewModel.fetchCountries()
         setContent {
+            val navController = rememberNavController()
             CountryInfoTheme {
                 Surface(color = MaterialTheme.colors.background) {
-                    CountryListScreen(viewModel)
+                    NavHost(navController = navController, startDestination = COUNTRY_LIST_PATH) {
+                        composable(COUNTRY_LIST_PATH) { CountryListScreen() }
+                        //composable(COUNTRY_LIST_PATH) { CountryDetailScreen() }
+                    }
                 }
             }
         }

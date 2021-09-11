@@ -17,10 +17,10 @@ import org.junit.Test
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.test.KoinTest
-import org.koin.test.mock.MockProviderRule
+import org.koin.test.mock.MockProvider
 import org.koin.test.mock.declareMock
 import org.mockito.BDDMockito.given
-import org.mockito.Mockito
+import org.mockito.BDDMockito.mock
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -32,18 +32,15 @@ class CountryListviewModelTest : KoinTest {
     @get:Rule
     val coroutineRule = MainCoroutineRule()
 
-    @get:Rule
-    val mockProvider = MockProviderRule.create { clazz ->
-        Mockito.mock(clazz.java)
-    }
-
     @Before
     fun setup() {
         startKoin {}
+        MockProvider.register {
+            mock(it.java)
+        }
         countriesService = declareMock {
             given(runBlocking { getCountries() }).willReturn(stubCountries)
         }
-
         viewModel = CountryListViewModel(countriesService)
     }
 

@@ -7,9 +7,14 @@ import androidx.compose.runtime.getValue
 import com.cmunaro.countryinfo.ui.screen.countrylist.components.ContinentFilter
 import com.cmunaro.countryinfo.ui.screen.countrylist.components.CountryList
 import com.cmunaro.countryinfo.ui.shared.Loading
+import org.koin.androidx.compose.getStateViewModel
+
+const val COUNTRY_LIST_PATH = "countryListPath"
 
 @Composable
-fun CountryListScreen(viewModel: CountryListViewModel) {
+fun CountryListScreen(
+    viewModel: CountryListViewModel = getStateViewModel()
+) {
     val countryListScreenState: CountryListScreenState by viewModel.state.collectAsState()
     Column {
         NameInputFilter(
