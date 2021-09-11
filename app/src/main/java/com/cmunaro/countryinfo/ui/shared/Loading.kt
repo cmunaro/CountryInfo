@@ -1,4 +1,4 @@
-package com.cmunaro.countryinfo.ui.screen.components
+package com.cmunaro.countryinfo.ui.shared
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

@@ -1,4 +1,4 @@
-package com.cmunaro.countryinfo.ui.screen.components
+package com.cmunaro.countryinfo.ui.shared
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable

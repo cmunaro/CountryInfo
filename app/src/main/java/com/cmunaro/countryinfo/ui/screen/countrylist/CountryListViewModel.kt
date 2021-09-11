@@ -18,7 +18,9 @@ class CountryListViewModel(
     fun fetchCountries() = viewModelScope.launch {
         _state.value = _state.value.copy(isLoading = true)
         val fetchedCountries = try {
-            countriesService.getCountries().toListOfCountryListEntry()
+            countriesService.getCountries()
+                .toListOfCountryListEntry()
+                .sortedBy { it.name }
         } catch (exception: ApolloException) {
             emptyList()
         }
