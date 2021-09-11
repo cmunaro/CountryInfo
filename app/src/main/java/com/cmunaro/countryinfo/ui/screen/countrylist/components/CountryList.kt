@@ -14,7 +14,10 @@ fun CountryList(items: List<CountryListEntry>) {
     LazyColumn(
         contentPadding = PaddingValues(8.dp)
     ) {
-        items(items) { country ->
+        items(
+            items,
+            key = { it.countryCode }
+        ) { country ->
             CountryRow(country)
         }
     }
