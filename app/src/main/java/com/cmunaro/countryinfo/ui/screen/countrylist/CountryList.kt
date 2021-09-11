@@ -1,6 +1,5 @@
 package com.cmunaro.countryinfo.ui.screen.countrylist
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,10 +19,9 @@ fun CountryList(items: List<CountryListEntry>) {
     }
 }
 
-@SuppressLint("UnrememberedMutableState")
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
+fun CountryListPreview() {
     CountryInfoTheme {
         CountryList(
             listOf(

@@ -33,7 +33,7 @@ fun CountryRow(country: CountryListEntry) {
 
 @Preview(showBackground = true)
 @Composable
-fun Preview() {
+fun CountryRowPreview() {
     CountryInfoTheme {
         CountryRow(country = CountryListEntry("Italia", "it"))
     }
