@@ -16,20 +16,24 @@ class CountryListViewModel(
     private val _state = mutableStateOf(CountryListScreenState())
     val state: State<CountryListScreenState> = _state
     private var countries: List<GetCountriesQuery.Country> = emptyList()
-    private var continents: List<String> = emptyList()
 
     fun fetchCountries() = viewModelScope.launch {
         _state.value = _state.value.copy(isLoading = true)
         val fetchedCountries = try {
             countries = countriesService.getCountries() ?: emptyList()
-            continents = countries.map { it.continent.name }.distinct()
             countries.toListOfCountryListEntry()
         } catch (exception: ApolloException) {
             emptyList()
-        }
+        }.sortedBy { it.name }
+        val continentFilters = countries.map { it.continent.name }
+            .distinct()
+            .sorted()
+            .map { ContinentFilterEntry(it) }
         _state.value = _state.value.copy(
             isLoading = false,
-            countries = fetchedCountries.sortedBy { it.name }
+            countries = fetchedCountries,
+            filterName = "",
+            continentFilters = continentFilters
         )
     }
 
@@ -37,10 +41,7 @@ class CountryListViewModel(
     fun changeNameFilter(filter: String) {
         _state.value = _state.value.copy(
             filterName = filter,
-            countries = countries
-                .toListOfCountryListEntry()
-                .filter { it.name.startsWith(filter, ignoreCase = true) }
-                .sortedBy { it.name }
+            countries = getCountries(filter, _state.value.continentFilters)
         )
     }
 
@@ -48,9 +49,41 @@ class CountryListViewModel(
     fun clearNameFilter() {
         _state.value = _state.value.copy(
             filterName = "",
-            countries = countries
-                .toListOfCountryListEntry()
+            countries = getCountries("", _state.value.continentFilters)
         )
+    }
+
+    @Stable
+    fun toggleFilter(filterToBeToggled: ContinentFilterEntry) {
+        val newFilters = _state.value.continentFilters
+            .map {
+                when (it.name) {
+                    filterToBeToggled.name -> it.copy(enable = !it.enable)
+                    else -> it
+                }
+            }
+        _state.value = _state.value.copy(
+            continentFilters = newFilters,
+            countries = getCountries(_state.value.filterName, newFilters)
+        )
+    }
+
+    private fun getCountries(
+        nameFilter: String,
+        continentFilter: List<ContinentFilterEntry>
+    ): List<CountryListEntry> {
+        val enabledContinents = continentFilter
+            .filter { it.enable }
+            .map { it.name }
+        return countries
+            .filter { country ->
+                country.name.startsWith(nameFilter, ignoreCase = true)
+            }
+            .filter { country ->
+                country.continent.name in enabledContinents
+            }
+            .toListOfCountryListEntry()
+            .sortedBy { it.name }
     }
 }
 
@@ -66,9 +99,15 @@ data class CountryListEntry(
 )
 
 @Stable
+data class ContinentFilterEntry(
+    val name: String,
+    val enable: Boolean = true
+)
+
+@Stable
 data class CountryListScreenState(
     val isLoading: Boolean = true,
     val countries: List<CountryListEntry> = emptyList(),
     val filterName: String = "",
-    val filterContinent: List<String> = emptyList()
+    val continentFilters: List<ContinentFilterEntry> = emptyList()
 )
