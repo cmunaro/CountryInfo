@@ -1,5 +1,6 @@
 package com.cmunaro.countryinfo.ui.screen.countrylist.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -18,7 +19,8 @@ fun CountryList(
     items: List<CountryListEntry>
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(8.dp)
+        contentPadding = PaddingValues(8.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         items(
             items,
