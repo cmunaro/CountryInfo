@@ -40,6 +40,7 @@ class CountryListViewModelTest : KoinTest {
         }
         countriesService = declareMock {
             given(runBlocking { getCountries() }).willReturn(stubCountries)
+            given(runBlocking { getContinents() }).willReturn(stubContinents)
         }
         viewModel = CountryListViewModel(countriesService)
     }
@@ -54,7 +55,7 @@ class CountryListViewModelTest : KoinTest {
         viewModel.state.test {
             assertThat(awaitItem().isLoading).isFalse()
 
-            viewModel.fetchCountries()
+            viewModel.loadData()
 
             assertThat(awaitItem().isLoading).isTrue()
 
@@ -75,7 +76,7 @@ class CountryListViewModelTest : KoinTest {
         viewModel.state.test {
             assertThat(awaitItem().isLoading).isFalse()
 
-            viewModel.fetchCountries()
+            viewModel.loadData()
 
             assertThat(awaitItem().isLoading).isTrue()
             assertThat(awaitItem().isLoading).isFalse()
@@ -100,7 +101,7 @@ class CountryListViewModelTest : KoinTest {
         viewModel.state.test {
             assertThat(awaitItem().isLoading).isFalse()
 
-            viewModel.fetchCountries()
+            viewModel.loadData()
 
             assertThat(awaitItem().isLoading).isTrue()
             assertThat(awaitItem().isLoading).isFalse()
@@ -128,7 +129,7 @@ class CountryListViewModelTest : KoinTest {
         viewModel.state.test {
             assertThat(awaitItem().isLoading).isFalse()
 
-            viewModel.fetchCountries()
+            viewModel.loadData()
 
             assertThat(awaitItem().isLoading).isTrue()
             assertThat(awaitItem().isLoading).isFalse()
@@ -165,7 +166,7 @@ class CountryListViewModelTest : KoinTest {
         viewModel.state.test {
             assertThat(awaitItem().isLoading).isFalse()
 
-            viewModel.fetchCountries()
+            viewModel.loadData()
 
             assertThat(awaitItem().isLoading).isTrue()
             assertThat(awaitItem().isLoading).isFalse()
@@ -232,8 +233,25 @@ private val stubCountries = listOf(
 private val countriesSortedByName = stubCountries
     .map { CountryListDefinition(it.name, it.code) }
     .sortedBy { it.name }
-private val continentsFilter = stubCountries
-    .map { it.continent.name }
-    .distinct()
+private val stubContinents = listOf(
+    GetContinentsQuery.Continent(
+        code = "AF",
+        name = "Africa"
+    ),
+    GetContinentsQuery.Continent(
+        code = "AS",
+        name = "Asia"
+    ),
+    GetContinentsQuery.Continent(
+        code = "EU",
+        name = "Europe"
+    ),
+    GetContinentsQuery.Continent(
+        code = "NA",
+        name = "North America"
+    )
+)
+private val continentsFilter = stubContinents
+    .map { it.name }
     .sorted()
     .map { ContinentFilterEntry(it) }

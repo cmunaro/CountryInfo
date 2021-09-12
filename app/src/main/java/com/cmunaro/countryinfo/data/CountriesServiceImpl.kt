@@ -1,6 +1,7 @@
 package com.cmunaro.countryinfo.data
 
 import com.apollographql.apollo.coroutines.await
+import com.cmunaro.countryinfo.GetContinentsQuery
 import com.cmunaro.countryinfo.GetCountriesQuery
 import com.cmunaro.countryinfo.GetCountryInfoQuery
 
@@ -18,4 +19,11 @@ class CountriesServiceImpl(private val countriesApollo: CountriesApollo) : Count
         .await()
         .data
         ?.country
+
+    override suspend fun getContinents() = countriesApollo
+        .client
+        .query(GetContinentsQuery())
+        .await()
+        .data
+        ?.continents
 }

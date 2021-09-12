@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.exception.ApolloException
 import com.cmunaro.countryinfo.GetCountriesQuery
 import com.cmunaro.countryinfo.data.CountriesService
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -17,18 +18,16 @@ class CountryListViewModel(
     val state: StateFlow<CountryListScreenState> = _state
 
     init {
-        fetchCountries()
+        loadData()
     }
 
-    fun fetchCountries() = viewModelScope.launch {
+    fun loadData() = viewModelScope.launch {
         _state.value = _state.value.copy(isLoading = true)
-        val fetchedCountries = try {
-            countriesService.getCountries() ?: emptyList()
-        } catch (exception: ApolloException) {
-            emptyList()
-        }.sortedBy { it.name }
-        val continentFilters = fetchedCountries.map { it.continent.name }
-            .distinct()
+        val deferredCountries = async { getCountries() }
+        val deferredContinents = async { getContinents() }
+        val fetchedCountries = deferredCountries.await()
+        val fetchedContinents = deferredContinents.await()
+        val continentFilters = fetchedContinents.map { it.name }
             .sorted()
             .map { ContinentFilterEntry(it) }
         _state.value = _state.value.copy(
@@ -39,6 +38,19 @@ class CountryListViewModel(
             continentFilters = continentFilters
         )
     }
+
+    private suspend fun getCountries() = try {
+        countriesService.getCountries() ?: emptyList()
+    } catch (exception: ApolloException) {
+        emptyList()
+    }
+
+    private suspend fun getContinents() = try {
+        countriesService.getContinents() ?: emptyList()
+    } catch (exception: ApolloException) {
+        emptyList()
+    }
+
 
     @Stable
     fun changeNameFilter(filter: String) {
