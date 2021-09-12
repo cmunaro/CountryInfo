@@ -25,7 +25,7 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 @ExperimentalCoroutinesApi
-class CountryListviewModelTest : KoinTest {
+class CountryListViewModelTest : KoinTest {
     private lateinit var countriesService: CountriesService
     private lateinit var viewModel: CountryListViewModel
 
