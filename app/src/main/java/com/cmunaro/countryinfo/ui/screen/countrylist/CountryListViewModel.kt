@@ -15,7 +15,6 @@ class CountryListViewModel(
 ) : ViewModel() {
     private val _state = MutableStateFlow(CountryListScreenState())
     val state: StateFlow<CountryListScreenState> = _state
-    private var countries: List<GetCountriesQuery.Country> = emptyList()
 
     init {
         fetchCountries()
@@ -24,18 +23,18 @@ class CountryListViewModel(
     fun fetchCountries() = viewModelScope.launch {
         _state.value = _state.value.copy(isLoading = true)
         val fetchedCountries = try {
-            countries = countriesService.getCountries() ?: emptyList()
-            countries.toListOfCountryListEntry()
+            countriesService.getCountries() ?: emptyList()
         } catch (exception: ApolloException) {
             emptyList()
         }.sortedBy { it.name }
-        val continentFilters = countries.map { it.continent.name }
+        val continentFilters = fetchedCountries.map { it.continent.name }
             .distinct()
             .sorted()
             .map { ContinentFilterEntry(it) }
         _state.value = _state.value.copy(
             isLoading = false,
-            countries = fetchedCountries,
+            fetchedCountries = fetchedCountries,
+            filteredCountries = fetchedCountries.toListOfCountryListDefinition(),
             filterName = "",
             continentFilters = continentFilters
         )
@@ -45,7 +44,7 @@ class CountryListViewModel(
     fun changeNameFilter(filter: String) {
         _state.value = _state.value.copy(
             filterName = filter,
-            countries = getCountries(filter, _state.value.continentFilters)
+            filteredCountries = getFilteredCountries(filter, _state.value.continentFilters)
         )
     }
 
@@ -53,7 +52,7 @@ class CountryListViewModel(
     fun clearNameFilter() {
         _state.value = _state.value.copy(
             filterName = "",
-            countries = getCountries("", _state.value.continentFilters)
+            filteredCountries = getFilteredCountries("", _state.value.continentFilters)
         )
     }
 
@@ -68,36 +67,36 @@ class CountryListViewModel(
             }
         _state.value = _state.value.copy(
             continentFilters = newFilters,
-            countries = getCountries(_state.value.filterName, newFilters)
+            filteredCountries = getFilteredCountries(_state.value.filterName, newFilters)
         )
     }
 
-    private fun getCountries(
+    private fun getFilteredCountries(
         nameFilter: String,
         continentFilter: List<ContinentFilterEntry>
-    ): List<CountryListEntry> {
+    ): List<CountryListDefinition> {
         val enabledContinents = continentFilter
             .filter { it.enable }
             .map { it.name }
-        return countries
+        return _state.value.fetchedCountries
             .filter { country ->
                 country.name.startsWith(nameFilter, ignoreCase = true)
             }
             .filter { country ->
                 country.continent.name in enabledContinents
             }
-            .toListOfCountryListEntry()
+            .toListOfCountryListDefinition()
             .sortedBy { it.name }
     }
 }
 
-private fun List<GetCountriesQuery.Country>?.toListOfCountryListEntry(): List<CountryListEntry> =
+private fun List<GetCountriesQuery.Country>?.toListOfCountryListDefinition(): List<CountryListDefinition> =
     this
-        ?.map { CountryListEntry(it.name, it.code) }
+        ?.map { CountryListDefinition(it.name, it.code) }
         ?: emptyList()
 
 @Stable
-data class CountryListEntry(
+data class CountryListDefinition(
     val name: String,
     val countryCode: String
 )
@@ -111,7 +110,8 @@ data class ContinentFilterEntry(
 @Stable
 data class CountryListScreenState(
     val isLoading: Boolean = false,
-    val countries: List<CountryListEntry> = emptyList(),
+    val fetchedCountries: List<GetCountriesQuery.Country> = emptyList(),
+    val filteredCountries: List<CountryListDefinition> = emptyList(),
     val filterName: String = "",
     val continentFilters: List<ContinentFilterEntry> = emptyList()
 )

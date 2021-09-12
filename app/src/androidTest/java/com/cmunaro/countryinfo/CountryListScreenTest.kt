@@ -7,7 +7,7 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.navigation.compose.rememberNavController
 import com.cmunaro.countryinfo.ui.screen.countrylist.ContinentFilterEntry
-import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListEntry
+import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListDefinition
 import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListScreen
 import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListScreenState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -60,11 +60,11 @@ class CountryListScreenTest {
 
 private val dummyCountryListScreenState = CountryListScreenState(
     isLoading = false,
-    countries = listOf(
-        CountryListEntry("Italia", "IT"),
-        CountryListEntry("Norvegia", "NO"),
-        CountryListEntry("Spagna", "ES"),
-        CountryListEntry("France", "FR"),
+    filteredCountries = listOf(
+        CountryListDefinition("Italia", "IT"),
+        CountryListDefinition("Norvegia", "NO"),
+        CountryListDefinition("Spagna", "ES"),
+        CountryListDefinition("France", "FR"),
     ),
     filterName = "",
     continentFilters = listOf(

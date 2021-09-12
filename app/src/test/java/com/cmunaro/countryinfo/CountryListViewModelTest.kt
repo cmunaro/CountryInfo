@@ -3,7 +3,7 @@ package com.cmunaro.countryinfo
 import app.cash.turbine.test
 import com.cmunaro.countryinfo.data.CountriesService
 import com.cmunaro.countryinfo.ui.screen.countrylist.ContinentFilterEntry
-import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListEntry
+import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListDefinition
 import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListScreenState
 import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListViewModel
 import com.google.common.truth.Truth.assertThat
@@ -61,7 +61,8 @@ class CountryListViewModelTest : KoinTest {
             assertThat(awaitItem()).isEqualTo(
                 CountryListScreenState(
                     isLoading = false,
-                    countries = countriesSortedByName,
+                    fetchedCountries = stubCountries,
+                    filteredCountries = countriesSortedByName,
                     filterName = "",
                     continentFilters = continentsFilter
                 )
@@ -84,7 +85,8 @@ class CountryListViewModelTest : KoinTest {
             assertThat(awaitItem()).isEqualTo(
                 CountryListScreenState(
                     isLoading = false,
-                    countries = countriesSortedByName
+                    fetchedCountries = stubCountries,
+                    filteredCountries = countriesSortedByName
                         .filter { it.name.startsWith("a", ignoreCase = true) },
                     filterName = "a",
                     continentFilters = continentsFilter
@@ -112,7 +114,8 @@ class CountryListViewModelTest : KoinTest {
             assertThat(awaitItem()).isEqualTo(
                 CountryListScreenState(
                     isLoading = false,
-                    countries = countriesSortedByName,
+                    fetchedCountries = stubCountries,
+                    filteredCountries = countriesSortedByName,
                     filterName = "",
                     continentFilters = continentsFilter
                 )
@@ -142,13 +145,14 @@ class CountryListViewModelTest : KoinTest {
                 .map { it.name }
             val expectedCountryList = stubCountries
                 .filter { it.continent.name in expectedEnabledContinents }
-                .map { CountryListEntry(it.name, it.code) }
+                .map { CountryListDefinition(it.name, it.code) }
                 .sortedBy { it.name }
 
             assertThat(awaitItem()).isEqualTo(
                 CountryListScreenState(
                     isLoading = false,
-                    countries = expectedCountryList,
+                    fetchedCountries = stubCountries,
+                    filteredCountries = expectedCountryList,
                     filterName = "",
                     continentFilters = expectedContinentsFilter
                 )
@@ -178,10 +182,12 @@ class CountryListViewModelTest : KoinTest {
                 else it
             }
 
-            assertThat(awaitItem()).isEqualTo(
+            val asd = awaitItem()
+            assertThat(asd).isEqualTo(
                 CountryListScreenState(
                     isLoading = false,
-                    countries = countriesSortedByName
+                    fetchedCountries = stubCountries,
+                    filteredCountries = countriesSortedByName
                         .filter { it.countryCode in listOf("AD", "AG") },
                     filterName = "a",
                     continentFilters = expectedContinentsFilter
@@ -198,14 +204,14 @@ private val stubCountries = listOf(
         continent = GetCountriesQuery.Continent(name = "Europe")
     ),
     GetCountriesQuery.Country(
-        code = "AG",
-        name = "Antigua and Barbuda",
-        continent = GetCountriesQuery.Continent(name = "North America")
-    ),
-    GetCountriesQuery.Country(
         code = "AO",
         name = "Angola",
         continent = GetCountriesQuery.Continent(name = "Africa")
+    ),
+    GetCountriesQuery.Country(
+        code = "AG",
+        name = "Antigua and Barbuda",
+        continent = GetCountriesQuery.Continent(name = "North America")
     ),
     GetCountriesQuery.Country(
         code = "BN",
@@ -224,7 +230,7 @@ private val stubCountries = listOf(
     ),
 )
 private val countriesSortedByName = stubCountries
-    .map { CountryListEntry(it.name, it.code) }
+    .map { CountryListDefinition(it.name, it.code) }
     .sortedBy { it.name }
 private val continentsFilter = stubCountries
     .map { it.continent.name }

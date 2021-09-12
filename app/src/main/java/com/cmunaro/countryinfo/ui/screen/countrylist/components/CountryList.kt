@@ -10,13 +10,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.cmunaro.countryinfo.Route
-import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListEntry
+import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListDefinition
 import com.cmunaro.countryinfo.ui.theme.CountryInfoTheme
 
 @Composable
 fun CountryList(
     navController: NavController,
-    items: List<CountryListEntry>
+    items: List<CountryListDefinition>
 ) {
     LazyColumn(
         contentPadding = PaddingValues(8.dp),
@@ -43,10 +43,10 @@ fun CountryListPreview() {
         CountryList(
             rememberNavController(),
             listOf(
-                CountryListEntry("Italia", "IT"),
-                CountryListEntry("Norvegia", "NO"),
-                CountryListEntry("Spagna", "ES"),
-                CountryListEntry("France", "FR"),
+                CountryListDefinition("Italia", "IT"),
+                CountryListDefinition("Norvegia", "NO"),
+                CountryListDefinition("Spagna", "ES"),
+                CountryListDefinition("France", "FR"),
             )
         )
     }

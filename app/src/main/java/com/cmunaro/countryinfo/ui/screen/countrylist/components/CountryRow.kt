@@ -12,13 +12,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListEntry
+import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListDefinition
 import com.cmunaro.countryinfo.ui.shared.CountryFlag
 import com.cmunaro.countryinfo.ui.theme.CountryInfoTheme
 
 @Composable
 fun CountryRow(
-    country: CountryListEntry,
+    country: CountryListDefinition,
     onClick: () -> Unit
 ) {
     val fontSize = 30.sp
@@ -42,6 +42,6 @@ fun CountryRow(
 @Composable
 fun CountryRowPreview() {
     CountryInfoTheme {
-        CountryRow(country = CountryListEntry("Italia", "it")) {}
+        CountryRow(country = CountryListDefinition("Italia", "it")) {}
     }
 }

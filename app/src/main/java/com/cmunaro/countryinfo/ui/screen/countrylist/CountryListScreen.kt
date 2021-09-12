@@ -33,7 +33,7 @@ fun CountryListScreen(
             filters = countryListScreenState.continentFilters,
             onToggle = onToggleContinentFilter
         )
-        CountryList(navController = navController, items = countryListScreenState.countries)
+        CountryList(navController = navController, items = countryListScreenState.filteredCountries)
     }
     Loading(isVisible = countryListScreenState.isLoading)
 }
@@ -47,11 +47,11 @@ fun CountryListScreenPreview() {
             viewModelStateFlow = MutableStateFlow(
                 CountryListScreenState(
                     isLoading = false,
-                    countries = listOf(
-                        CountryListEntry("Italia", "IT"),
-                        CountryListEntry("Norvegia", "NO"),
-                        CountryListEntry("Spagna", "ES"),
-                        CountryListEntry("France", "FR"),
+                    filteredCountries = listOf(
+                        CountryListDefinition("Italia", "IT"),
+                        CountryListDefinition("Norvegia", "NO"),
+                        CountryListDefinition("Spagna", "ES"),
+                        CountryListDefinition("France", "FR"),
                     ),
                     filterName = "Asd",
                     continentFilters = listOf(
