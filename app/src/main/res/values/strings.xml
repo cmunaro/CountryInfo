@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">CountryInfo</string>
-    <string name="coutry_name_label">Country name</string>
+    <string name="country_name_label">Country name</string>
     <string name="description_clear_name_filter">Clear</string>
+    <string name="description_expandable_arrow">Expandable Arrow</string>
 </resources>

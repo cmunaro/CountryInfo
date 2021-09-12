@@ -26,7 +26,7 @@ fun NameInputFilter(filter: String, onChange: (String) -> Unit, onClear: () -> U
         singleLine = true,
         value = filter,
         onValueChange = onChange,
-        label = { Text(stringResource(R.string.coutry_name_label)) },
+        label = { Text(stringResource(R.string.country_name_label)) },
         keyboardActions = KeyboardActions(onSearch = { focusManager.clearFocus() }),
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = Search,
