@@ -1,4 +1,4 @@
-package com.cmunaro.countryinfo.ui.screen.countrydetails.components
+package com.cmunaro.countryinfo.ui.shared
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi

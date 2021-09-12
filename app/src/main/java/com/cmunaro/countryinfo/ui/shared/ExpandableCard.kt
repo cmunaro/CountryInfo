@@ -1,4 +1,4 @@
-package com.cmunaro.countryinfo.ui.screen.countrydetails.components
+package com.cmunaro.countryinfo.ui.shared
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.MutableTransitionState
