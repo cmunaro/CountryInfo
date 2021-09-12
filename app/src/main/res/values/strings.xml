@@ -3,4 +3,9 @@
     <string name="country_name_label">Country name</string>
     <string name="description_clear_name_filter">Clear</string>
     <string name="description_expandable_arrow">Expandable Arrow</string>
+    <string name="continent">Continent</string>
+    <string name="capital">Capital</string>
+    <string name="currency">Currency</string>
+    <string name="language">Language</string>
+    <string name="phone">Phone</string>
 </resources>
