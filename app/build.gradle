@@ -68,8 +68,6 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.3.1'
     implementation 'com.google.android.material:material:1.4.0'
     implementation "androidx.compose.ui:ui:$compose_version"
-    androidTestImplementation "androidx.compose.ui:ui:$compose_version"
-    androidTestImplementation "androidx.compose.material:material:$compose_version"
     implementation "androidx.compose.material:material:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
     implementation "androidx.navigation:navigation-compose:2.4.0-alpha08"
