@@ -20,6 +20,10 @@ class CountryDetailsViewModel(
 
     fun getInfoOf(countryCode: String) = coroutineScope.launch {
         if (_state.value.country?.countryCode == countryCode && !_state.value.error) return@launch
+        _state.value = _state.value.copy(
+            isLoading = true,
+            error = false
+        )
         val country: CountryDefinition? = try {
             countriesService.getCountryInfo(countryCode)
                 ?.toCountryDefinition()
@@ -28,7 +32,7 @@ class CountryDetailsViewModel(
         }
         _state.value = _state.value.copy(
             error = country == null,
-            loading = false,
+            isLoading = false,
             country = country
         )
     }
@@ -60,7 +64,7 @@ data class CountryDefinition(
 
 @Stable
 data class CountryDetailsState(
-    val loading: Boolean = false,
+    val isLoading: Boolean = false,
     val error: Boolean = false,
     val country: CountryDefinition? = null,
 )

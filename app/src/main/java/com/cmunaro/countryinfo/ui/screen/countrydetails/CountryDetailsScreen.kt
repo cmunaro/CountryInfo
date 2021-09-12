@@ -18,5 +18,5 @@ fun CountryDetailsScreen(
     state.country?.let { country ->
         CountryInfo(country = country)
     }
-    Loading(isVisible = state.loading)
+    Loading(isVisible = state.isLoading)
 }
