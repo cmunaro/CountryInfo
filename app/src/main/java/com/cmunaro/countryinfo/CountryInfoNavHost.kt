@@ -1,13 +1,12 @@
 package com.cmunaro.countryinfo
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsScreen
-import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsViewModel
 import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListScreen
-import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun CountryInfoNavHost(navController: NavHostController) = NavHost(
@@ -18,12 +17,12 @@ fun CountryInfoNavHost(navController: NavHostController) = NavHost(
         CountryListScreen(navController = navController)
     }
     composable(Route.CountryDetails.path.plus("/{countryCode}")) {
-        val countryCode = it.arguments
-            ?.getString("countryCode")
-            ?: return@composable
-        val viewModel: CountryDetailsViewModel = getViewModel()
-        viewModel.getInfoOf(countryCode)
-        CountryDetailsScreen(viewModel)
+        val countryCode = remember {
+            it.arguments
+                ?.getString("countryCode")
+                ?: return@composable
+        }
+        CountryDetailsScreen(countryCode)
     }
 }
 
