@@ -16,7 +16,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             CountryInfoTheme {
                 Surface(color = MaterialTheme.colors.background) {
-                    CoutryInfoNavHost(navController)
+                    CountryInfoNavHost(navController)
                 }
             }
         }

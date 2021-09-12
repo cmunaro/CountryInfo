@@ -1,0 +1,17 @@
+query GetCountryInfo($coutryCode: ID!) {
+    country(code: $coutryCode) {
+        code
+        name
+        native
+        phone
+        continent {
+            name
+        }
+        capital
+        currency
+        languages {
+            name
+            native
+        }
+    }
+}

@@ -5,10 +5,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsScreen
+import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsViewModel
 import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListScreen
+import org.koin.androidx.compose.getViewModel
 
 @Composable
-fun CoutryInfoNavHost(navController: NavHostController) = NavHost(
+fun CountryInfoNavHost(navController: NavHostController) = NavHost(
     navController = navController,
     startDestination = Route.CountryList.path
 ) {
@@ -19,7 +21,9 @@ fun CoutryInfoNavHost(navController: NavHostController) = NavHost(
         val countryCode = it.arguments
             ?.getString("countryCode")
             ?: return@composable
-        CountryDetailsScreen(countryCode)
+        val viewModel: CountryDetailsViewModel = getViewModel()
+        viewModel.getInfoOf(countryCode)
+        CountryDetailsScreen(viewModel)
     }
 }
 
