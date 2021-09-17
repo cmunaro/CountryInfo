@@ -20,7 +20,7 @@ class CountryListScreenTest {
     val composeTestRule = createComposeRule()
 
     @Test
-    fun ifThereIsTextsOnTheSearchBarTheClearIconIsVisible() {
+    fun populatedNameFilter() {
         setScreen(filterName = "Asd")
 
         composeTestRule
@@ -33,7 +33,7 @@ class CountryListScreenTest {
     }
 
     @Test
-    fun ifThereIsNotTextsOnTheSearchBarTheClearIconIsInvisible() {
+    fun emptyNameFilter() {
         setScreen(filterName = "")
 
         composeTestRule
@@ -41,14 +41,43 @@ class CountryListScreenTest {
             .assertDoesNotExist()
     }
 
-    private fun setScreen(filterName: String = "") {
+    @Test
+    fun showCountryList() {
+        setScreen()
+
+        composeTestRule
+            .onNodeWithText("Italia")
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText("Norvegia")
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText("Spagna")
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText("France")
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun emptyCountryList() {
+        setScreen(emptyList = true)
+
+        composeTestRule
+            .onNodeWithText("No country matches these filters")
+            .assertIsDisplayed()
+    }
+
+    private fun setScreen(filterName: String = "", emptyList: Boolean = false) {
         composeTestRule.setContent {
             CountryListScreen(
                 navController = rememberNavController(),
                 handleAction = {},
                 viewModelStateFlow = MutableStateFlow(
                     dummyCountryListScreenState.copy(
-                        filterName = filterName
+                        filterName = filterName,
+                        filteredCountries = if (emptyList) emptyList()
+                        else dummyCountryListScreenState.filteredCountries
                     )
                 )
             )

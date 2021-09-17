@@ -25,6 +25,7 @@ fun CountryListScreen(
     LaunchedEffect(Unit) {
         handleAction(CountryListAction.FetchCountries)
     }
+
     Column {
         NameInputFilter(
             filter = countryListScreenState.filterName,

@@ -8,4 +8,5 @@
     <string name="currency">Currency</string>
     <string name="language">Language</string>
     <string name="phone">Phone</string>
+    <string name="country_list_empty_message">No country matches these filters</string>
 </resources>
