@@ -1,7 +1,6 @@
 package com.cmunaro.countryinfo
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -11,6 +10,7 @@ import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsViewModel
 import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListScreen
 import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListViewModel
 import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun CountryInfoNavHost(navController: NavHostController) = NavHost(
@@ -33,9 +33,13 @@ fun CountryInfoNavHost(navController: NavHostController) = NavHost(
                 ?.getString("countryCode")
                 ?: return@composable
         }
-        val viewModel: CountryDetailsViewModel = getViewModel()
-        LaunchedEffect(countryCode) { viewModel.getInfoOf(countryCode) }
-        CountryDetailsScreen(viewModelStateFlow = viewModel.state)
+        val viewModel: CountryDetailsViewModel = getViewModel(
+            parameters = { parametersOf(countryCode) }
+        )
+        CountryDetailsScreen(
+            viewModelActions = viewModel.actions,
+            viewModelStateFlow = viewModel.state
+        )
     }
 }
 

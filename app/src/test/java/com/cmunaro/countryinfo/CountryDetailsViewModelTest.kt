@@ -3,6 +3,7 @@ package com.cmunaro.countryinfo
 import app.cash.turbine.test
 import com.cmunaro.countryinfo.data.CountriesService
 import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDefinition
+import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsActions
 import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsState
 import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsViewModel
 import com.google.common.truth.Truth.assertThat
@@ -43,7 +44,7 @@ class CountryDetailsViewModelTest : KoinTest {
         countriesService = declareMock {
             given(runBlocking { getCountryInfo(anyString()) }).willReturn(countryStub)
         }
-        viewModel = CountryDetailsViewModel(TestCoroutineScope(SupervisorJob()), countriesService)
+        viewModel = CountryDetailsViewModel("", TestCoroutineScope(SupervisorJob()), countriesService)
     }
 
     @After
@@ -52,11 +53,11 @@ class CountryDetailsViewModelTest : KoinTest {
     }
 
     @Test
-    fun `fetchCountries initializes the state`() = runBlockingTest {
+    fun `fetch info happy path`() = runBlockingTest {
         viewModel.state.test {
             assertThat(awaitItem().isLoading).isFalse()
 
-            viewModel.getInfoOf("IT")
+            viewModel.actions.send(CountryDetailsActions.FetchInfo)
 
             val loadingState = awaitItem()
             assertThat(loadingState.isLoading).isTrue()

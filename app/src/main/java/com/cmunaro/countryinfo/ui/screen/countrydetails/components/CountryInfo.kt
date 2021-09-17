@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,6 +23,7 @@ fun CountryInfo(country: CountryDefinition) {
             text = "${country.name} (${country.countryCode})",
             style = MaterialTheme.typography.h4,
             modifier = Modifier.padding(4.dp)
+                .align(CenterHorizontally)
         )
         CountryExpandableInfo(title = stringResource(R.string.continent), country.continent)
         CountryExpandableInfo(title = stringResource(R.string.capital), country.capital)

@@ -7,19 +7,34 @@ import com.apollographql.apollo.exception.ApolloException
 import com.cmunaro.countryinfo.GetCountryInfoQuery
 import com.cmunaro.countryinfo.data.CountriesService
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class CountryDetailsViewModel(
-    private val coroutineScope: CoroutineScope,
+    private val countryCode: String,
+    private val scope: CoroutineScope,
     private val countriesService: CountriesService
 ) : ViewModel() {
     private val _state = MutableStateFlow(CountryDetailsState())
     val state: StateFlow<CountryDetailsState> = _state
+    val actions = Channel<CountryDetailsActions>()
 
-    fun getInfoOf(countryCode: String) = coroutineScope.launch {
-        if (_state.value.country?.countryCode == countryCode && !_state.value.error) return@launch
+    init {
+        scope.launch {
+            actions.receiveAsFlow().collect {
+                when(it) {
+                    CountryDetailsActions.FetchInfo -> fetchInfo()
+                }
+            }
+        }
+    }
+
+    private fun fetchInfo() = scope.launch {
+        if (_state.value.isLoading) return@launch
         _state.value = _state.value.copy(
             isLoading = true,
             error = false
@@ -36,6 +51,10 @@ class CountryDetailsViewModel(
             country = country
         )
     }
+}
+
+sealed interface CountryDetailsActions {
+    object FetchInfo: CountryDetailsActions
 }
 
 private fun GetCountryInfoQuery.Country?.toCountryDefinition(): CountryDefinition? {
