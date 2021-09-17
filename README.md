@@ -1,2 +1,2 @@
 # CountryInfo
-Jetpack Compose application
+MVI Jetpack Compose application
