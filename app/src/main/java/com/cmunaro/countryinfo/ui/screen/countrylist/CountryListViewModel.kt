@@ -2,26 +2,30 @@ package com.cmunaro.countryinfo.ui.screen.countrylist
 
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.apollographql.apollo.exception.ApolloException
 import com.cmunaro.countryinfo.GetCountriesQuery
 import com.cmunaro.countryinfo.data.CountriesService
-import kotlinx.coroutines.async
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 class CountryListViewModel(
+    private val scope: CoroutineScope,
     private val countriesService: CountriesService
 ) : ViewModel() {
     private val _state = MutableStateFlow(CountryListScreenState())
     val state: StateFlow<CountryListScreenState> = _state
 
-    init {
-        loadData()
+    fun handleAction(action: CountryListAction) {
+        when (action) {
+            CountryListAction.FetchCountries -> fetchCountries()
+            is CountryListAction.ChangeNameFilter -> changeNameFilter(action.filter)
+            CountryListAction.ClearNameFilter -> clearNameFilter()
+            is CountryListAction.ToggleContinentFilter -> toggleFilter(action.filter)
+        }
     }
 
-    fun loadData() = viewModelScope.launch {
+    private fun fetchCountries() = scope.launch {
         _state.value = _state.value.copy(isLoading = true)
         val deferredCountries = async { getCountries() }
         val deferredContinents = async { getContinents() }
@@ -53,7 +57,7 @@ class CountryListViewModel(
 
 
     @Stable
-    fun changeNameFilter(filter: String) {
+    private fun changeNameFilter(filter: String) {
         _state.value = _state.value.copy(
             filterName = filter,
             filteredCountries = getFilteredCountries(filter, _state.value.continentFilters)
@@ -61,7 +65,7 @@ class CountryListViewModel(
     }
 
     @Stable
-    fun clearNameFilter() {
+    private fun clearNameFilter() {
         _state.value = _state.value.copy(
             filterName = "",
             filteredCountries = getFilteredCountries("", _state.value.continentFilters)
@@ -69,7 +73,7 @@ class CountryListViewModel(
     }
 
     @Stable
-    fun toggleFilter(filterToBeToggled: ContinentFilterEntry) {
+    private fun toggleFilter(filterToBeToggled: ContinentFilterEntry) {
         val newFilters = _state.value.continentFilters
             .map {
                 when (it.name) {
@@ -106,6 +110,13 @@ private fun List<GetCountriesQuery.Country>?.toListOfCountryListDefinition(): Li
     this
         ?.map { CountryListDefinition(it.name, it.code) }
         ?: emptyList()
+
+sealed interface CountryListAction {
+    object FetchCountries : CountryListAction
+    data class ChangeNameFilter(val filter: String) : CountryListAction
+    object ClearNameFilter : CountryListAction
+    data class ToggleContinentFilter(val filter: ContinentFilterEntry) : CountryListAction
+}
 
 @Stable
 data class CountryListDefinition(

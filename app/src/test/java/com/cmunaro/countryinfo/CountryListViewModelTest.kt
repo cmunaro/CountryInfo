@@ -2,13 +2,12 @@ package com.cmunaro.countryinfo
 
 import app.cash.turbine.test
 import com.cmunaro.countryinfo.data.CountriesService
-import com.cmunaro.countryinfo.ui.screen.countrylist.ContinentFilterEntry
-import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListDefinition
-import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListScreenState
-import com.cmunaro.countryinfo.ui.screen.countrylist.CountryListViewModel
+import com.cmunaro.countryinfo.ui.screen.countrylist.*
 import com.google.common.truth.Truth.assertThat
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
 import org.junit.Before
@@ -42,7 +41,7 @@ class CountryListViewModelTest : KoinTest {
             given(runBlocking { getCountries() }).willReturn(stubCountries)
             given(runBlocking { getContinents() }).willReturn(stubContinents)
         }
-        viewModel = CountryListViewModel(countriesService)
+        viewModel = CountryListViewModel(TestCoroutineScope(SupervisorJob()), countriesService)
     }
 
     @After
@@ -55,7 +54,7 @@ class CountryListViewModelTest : KoinTest {
         viewModel.state.test {
             assertThat(awaitItem().isLoading).isFalse()
 
-            viewModel.loadData()
+            viewModel.handleAction(CountryListAction.FetchCountries)
 
             assertThat(awaitItem().isLoading).isTrue()
 
@@ -76,12 +75,12 @@ class CountryListViewModelTest : KoinTest {
         viewModel.state.test {
             assertThat(awaitItem().isLoading).isFalse()
 
-            viewModel.loadData()
+            viewModel.handleAction(CountryListAction.FetchCountries)
 
             assertThat(awaitItem().isLoading).isTrue()
             assertThat(awaitItem().isLoading).isFalse()
 
-            viewModel.changeNameFilter("a")
+            viewModel.handleAction(CountryListAction.ChangeNameFilter("a"))
 
             assertThat(awaitItem()).isEqualTo(
                 CountryListScreenState(
@@ -101,16 +100,16 @@ class CountryListViewModelTest : KoinTest {
         viewModel.state.test {
             assertThat(awaitItem().isLoading).isFalse()
 
-            viewModel.loadData()
+            viewModel.handleAction(CountryListAction.FetchCountries)
 
             assertThat(awaitItem().isLoading).isTrue()
             assertThat(awaitItem().isLoading).isFalse()
 
-            viewModel.changeNameFilter("a")
+            viewModel.handleAction(CountryListAction.ChangeNameFilter("a"))
 
             assertThat(awaitItem().filterName).isEqualTo("a")
 
-            viewModel.clearNameFilter()
+            viewModel.handleAction(CountryListAction.ClearNameFilter)
 
             assertThat(awaitItem()).isEqualTo(
                 CountryListScreenState(
@@ -129,12 +128,12 @@ class CountryListViewModelTest : KoinTest {
         viewModel.state.test {
             assertThat(awaitItem().isLoading).isFalse()
 
-            viewModel.loadData()
+            viewModel.handleAction(CountryListAction.FetchCountries)
 
             assertThat(awaitItem().isLoading).isTrue()
             assertThat(awaitItem().isLoading).isFalse()
 
-            viewModel.toggleFilter(continentsFilter[1])
+            viewModel.handleAction(CountryListAction.ToggleContinentFilter(continentsFilter[1]))
 
             val expectedContinentsFilter = continentsFilter.map {
                 if (it.name == continentsFilter[1].name)
@@ -166,16 +165,16 @@ class CountryListViewModelTest : KoinTest {
         viewModel.state.test {
             assertThat(awaitItem().isLoading).isFalse()
 
-            viewModel.loadData()
+            viewModel.handleAction(CountryListAction.FetchCountries)
 
             assertThat(awaitItem().isLoading).isTrue()
             assertThat(awaitItem().isLoading).isFalse()
 
-            viewModel.toggleFilter(continentsFilter[0])
+            viewModel.handleAction(CountryListAction.ToggleContinentFilter(continentsFilter[0]))
             awaitItem()
-            viewModel.toggleFilter(continentsFilter[1])
+            viewModel.handleAction(CountryListAction.ToggleContinentFilter(continentsFilter[1]))
             awaitItem()
-            viewModel.changeNameFilter("a")
+            viewModel.handleAction(CountryListAction.ChangeNameFilter("a"))
 
             val expectedContinentsFilter = continentsFilter.map {
                 if (it.name in continentsFilter.subList(0, 2).map { cont -> cont.name })

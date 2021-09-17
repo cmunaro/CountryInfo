@@ -3,7 +3,7 @@ package com.cmunaro.countryinfo
 import app.cash.turbine.test
 import com.cmunaro.countryinfo.data.CountriesService
 import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDefinition
-import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsActions
+import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsAction
 import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsState
 import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsViewModel
 import com.google.common.truth.Truth.assertThat
@@ -57,7 +57,7 @@ class CountryDetailsViewModelTest : KoinTest {
         viewModel.state.test {
             assertThat(awaitItem().isLoading).isFalse()
 
-            viewModel.actions.send(CountryDetailsActions.FetchInfo)
+            viewModel.handleAction(CountryDetailsAction.FetchInfo)
 
             val loadingState = awaitItem()
             assertThat(loadingState.isLoading).isTrue()

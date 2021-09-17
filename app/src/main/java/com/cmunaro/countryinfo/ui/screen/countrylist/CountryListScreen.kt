@@ -3,6 +3,7 @@ package com.cmunaro.countryinfo.ui.screen.countrylist
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -17,21 +18,22 @@ import kotlinx.coroutines.flow.StateFlow
 @Composable
 fun CountryListScreen(
     navController: NavHostController,
-    viewModelStateFlow: StateFlow<CountryListScreenState>,
-    onChangeNameFilter: (String) -> Unit,
-    onClearNameFilter: () -> Unit,
-    onToggleContinentFilter: (ContinentFilterEntry) -> Unit
+    handleAction: (CountryListAction) -> Unit,
+    viewModelStateFlow: StateFlow<CountryListScreenState>
 ) {
     val countryListScreenState: CountryListScreenState by viewModelStateFlow.collectAsState()
+    LaunchedEffect(Unit) {
+        handleAction(CountryListAction.FetchCountries)
+    }
     Column {
         NameInputFilter(
             filter = countryListScreenState.filterName,
-            onChange = onChangeNameFilter,
-            onClear = onClearNameFilter
+            onChange = { handleAction(CountryListAction.ChangeNameFilter(it)) },
+            onClear = { handleAction(CountryListAction.ClearNameFilter) }
         )
         ContinentFilter(
             filters = countryListScreenState.continentFilters,
-            onToggle = onToggleContinentFilter
+            onToggle = { handleAction(CountryListAction.ToggleContinentFilter(it)) }
         )
         CountryList(navController = navController, items = countryListScreenState.filteredCountries)
     }
@@ -44,6 +46,7 @@ fun CountryListScreenPreview() {
     MaterialTheme {
         CountryListScreen(
             navController = rememberNavController(),
+            handleAction = {},
             viewModelStateFlow = MutableStateFlow(
                 CountryListScreenState(
                     isLoading = false,
@@ -59,10 +62,7 @@ fun CountryListScreenPreview() {
                         ContinentFilterEntry("Asia", false)
                     )
                 )
-            ),
-            onChangeNameFilter = {},
-            onClearNameFilter = {},
-            onToggleContinentFilter = {}
+            )
         )
     }
 }

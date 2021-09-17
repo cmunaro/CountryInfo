@@ -45,14 +45,12 @@ class CountryListScreenTest {
         composeTestRule.setContent {
             CountryListScreen(
                 navController = rememberNavController(),
+                handleAction = {},
                 viewModelStateFlow = MutableStateFlow(
                     dummyCountryListScreenState.copy(
                         filterName = filterName
                     )
-                ),
-                onChangeNameFilter = {},
-                onClearNameFilter = {},
-                onToggleContinentFilter = {}
+                )
             )
         }
     }

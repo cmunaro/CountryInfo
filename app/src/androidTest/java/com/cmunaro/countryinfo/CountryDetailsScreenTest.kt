@@ -19,7 +19,10 @@ class CountryDetailsScreenTest {
     @Test
     fun countryDetailsScreenMainContent() {
         composeTestRule.setContent {
-            CountryDetailsScreen(viewModelStateFlow = MutableStateFlow(dummyCountryDetailsState))
+            CountryDetailsScreen(
+                handleAction = {},
+                viewModelStateFlow = MutableStateFlow(dummyCountryDetailsState)
+            )
         }
 
         composeTestRule
@@ -45,7 +48,10 @@ class CountryDetailsScreenTest {
     @Test
     fun toggleCard() {
         composeTestRule.setContent {
-            CountryDetailsScreen(viewModelStateFlow = MutableStateFlow(dummyCountryDetailsState))
+            CountryDetailsScreen(
+                viewModelStateFlow = MutableStateFlow(dummyCountryDetailsState),
+                handleAction = {}
+            )
         }
 
         composeTestRule
