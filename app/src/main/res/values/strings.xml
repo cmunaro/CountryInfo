@@ -9,4 +9,6 @@
     <string name="language">Language</string>
     <string name="phone">Phone</string>
     <string name="country_list_empty_message">No country matches these filters</string>
+    <string name="generic_error_message">Something went wrong</string>
+    <string name="retry_button_text">Retry</string>
 </resources>

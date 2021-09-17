@@ -12,8 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun Loading(isVisible: Boolean) {
-    if (!isVisible) return
+fun Loading() {
     Box(
         modifier = Modifier
             .fillMaxSize()

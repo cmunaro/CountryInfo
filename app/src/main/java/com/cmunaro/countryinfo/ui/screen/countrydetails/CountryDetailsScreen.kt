@@ -6,7 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsAction.*
+import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsAction.FetchInfo
 import com.cmunaro.countryinfo.ui.screen.countrydetails.components.CountryInfo
 import com.cmunaro.countryinfo.ui.shared.Loading
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +24,9 @@ fun CountryDetailsScreen(
     state.country?.let { country ->
         CountryInfo(country = country)
     }
-    Loading(isVisible = state.isLoading)
+    if (state.isLoading) {
+        Loading()
+    }
 }
 
 @Preview(showBackground = true)

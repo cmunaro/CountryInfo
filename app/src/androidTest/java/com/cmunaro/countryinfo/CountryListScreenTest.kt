@@ -24,6 +24,8 @@ class CountryListScreenTest {
         setScreen(filterName = "Asd")
 
         composeTestRule
+            .onNodeWithText("Country name")
+        composeTestRule
             .onNodeWithText("Asd")
             .assertIsDisplayed()
         composeTestRule
@@ -36,6 +38,8 @@ class CountryListScreenTest {
     fun emptyNameFilter() {
         setScreen(filterName = "")
 
+        composeTestRule
+            .onNodeWithText("Country name")
         composeTestRule
             .onNodeWithContentDescription("Clear")
             .assertDoesNotExist()
@@ -60,6 +64,38 @@ class CountryListScreenTest {
     }
 
     @Test
+    fun errorState() {
+        setScreen(error = true)
+
+        composeTestRule
+            .onNodeWithText("Country name")
+        composeTestRule
+            .onNodeWithText("Retry")
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText("name filter")
+            .assertDoesNotExist()
+        composeTestRule
+            .onNodeWithText("Asie")
+            .assertDoesNotExist()
+        composeTestRule
+            .onNodeWithText("Europe")
+            .assertDoesNotExist()
+        composeTestRule
+            .onNodeWithText("Italia")
+            .assertDoesNotExist()
+        composeTestRule
+            .onNodeWithText("Norvegia")
+            .assertDoesNotExist()
+        composeTestRule
+            .onNodeWithText("Spagna")
+            .assertDoesNotExist()
+        composeTestRule
+            .onNodeWithText("France")
+            .assertDoesNotExist()
+    }
+
+    @Test
     fun emptyCountryList() {
         setScreen(emptyList = true)
 
@@ -68,7 +104,11 @@ class CountryListScreenTest {
             .assertIsDisplayed()
     }
 
-    private fun setScreen(filterName: String = "", emptyList: Boolean = false) {
+    private fun setScreen(
+        filterName: String = "",
+        emptyList: Boolean = false,
+        error: Boolean = false
+    ) {
         composeTestRule.setContent {
             CountryListScreen(
                 navController = rememberNavController(),
@@ -76,6 +116,7 @@ class CountryListScreenTest {
                 viewModelStateFlow = MutableStateFlow(
                     dummyCountryListScreenState.copy(
                         filterName = filterName,
+                        error = error,
                         filteredCountries = if (emptyList) emptyList()
                         else dummyCountryListScreenState.filteredCountries
                     )
