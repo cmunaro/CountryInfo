@@ -3,6 +3,7 @@ package com.cmunaro.countryinfo.ui.screen.countrylist
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import com.apollographql.apollo.exception.ApolloException
+import com.cmunaro.countryinfo.GetContinentsQuery
 import com.cmunaro.countryinfo.GetCountriesQuery
 import com.cmunaro.countryinfo.data.CountriesService
 import kotlinx.coroutines.*
@@ -31,28 +32,29 @@ class CountryListViewModel(
         val deferredContinents = async { getContinents() }
         val fetchedCountries = deferredCountries.await()
         val fetchedContinents = deferredContinents.await()
-        val continentFilters = fetchedContinents.map { it.name }
-            .sorted()
-            .map { ContinentFilterEntry(it) }
+        val continentFilters = fetchedContinents?.map { it.name }
+            ?.sorted()
+            ?.map { ContinentFilterEntry(it) }
         _state.value = _state.value.copy(
             isLoading = false,
-            fetchedCountries = fetchedCountries,
+            error = fetchedCountries == null || fetchedContinents == null,
+            fetchedCountries = fetchedCountries?: emptyList(),
             filteredCountries = fetchedCountries.toListOfCountryListDefinition(),
             filterName = "",
-            continentFilters = continentFilters
+            continentFilters = continentFilters?: emptyList()
         )
     }
 
-    private suspend fun getCountries() = try {
-        countriesService.getCountries() ?: emptyList()
-    } catch (exception: ApolloException) {
-        emptyList()
+    private suspend fun getCountries(): List<GetCountriesQuery.Country>? = try {
+        countriesService.getCountries()
+    } catch (_: Exception) {
+        null
     }
 
-    private suspend fun getContinents() = try {
-        countriesService.getContinents() ?: emptyList()
-    } catch (exception: ApolloException) {
-        emptyList()
+    private suspend fun getContinents(): List<GetContinentsQuery.Continent>? = try {
+        countriesService.getContinents()
+    } catch (_: Exception) {
+        null
     }
 
 
@@ -133,6 +135,7 @@ data class ContinentFilterEntry(
 @Stable
 data class CountryListScreenState(
     val isLoading: Boolean = false,
+    val error: Boolean = false,
     val fetchedCountries: List<GetCountriesQuery.Country> = emptyList(),
     val filteredCountries: List<CountryListDefinition> = emptyList(),
     val filterName: String = "",

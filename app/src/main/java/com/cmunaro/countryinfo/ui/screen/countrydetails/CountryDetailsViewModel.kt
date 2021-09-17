@@ -25,23 +25,24 @@ class CountryDetailsViewModel(
         }
     }
 
-    private fun fetchInfo() = scope.launch {
-        if (_state.value.isLoading) return@launch
-        _state.value = _state.value.copy(
-            isLoading = true,
-            error = false
-        )
-        val country: CountryDefinition? = try {
-            countriesService.getCountryInfo(countryCode)
-                ?.toCountryDefinition()
-        } catch (exception: ApolloException) {
-            null
+    private fun fetchInfo() {
+        scope.launch {
+            _state.value = _state.value.copy(
+                isLoading = true,
+                error = false
+            )
+            val country: CountryDefinition? = try {
+                countriesService.getCountryInfo(countryCode)
+                    ?.toCountryDefinition()
+            } catch (_: Exception) {
+                null
+            }
+            _state.value = _state.value.copy(
+                error = country == null,
+                isLoading = false,
+                country = country
+            )
         }
-        _state.value = _state.value.copy(
-            error = country == null,
-            isLoading = false,
-            country = country
-        )
     }
 }
 

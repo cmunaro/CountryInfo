@@ -7,9 +7,7 @@ import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsAction
 import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsState
 import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsViewModel
 import com.google.common.truth.Truth.assertThat
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.After
@@ -22,8 +20,7 @@ import org.koin.test.KoinTest
 import org.koin.test.mock.MockProvider
 import org.koin.test.mock.declareMock
 import org.mockito.ArgumentMatchers.anyString
-import org.mockito.BDDMockito.given
-import org.mockito.BDDMockito.mock
+import org.mockito.BDDMockito.*
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
@@ -31,6 +28,7 @@ import kotlin.time.ExperimentalTime
 class CountryDetailsViewModelTest : KoinTest {
     private lateinit var countriesService: CountriesService
     private lateinit var viewModel: CountryDetailsViewModel
+    private lateinit var getCountryInfoAction: () -> GetCountryInfoQuery.Country
 
     @get:Rule
     val coroutineRule = MainCoroutineRule()
@@ -42,9 +40,13 @@ class CountryDetailsViewModelTest : KoinTest {
             mock(it.java)
         }
         countriesService = declareMock {
-            given(runBlocking { getCountryInfo(anyString()) }).willReturn(countryStub)
+            given(runBlocking { getCountryInfo(anyString()) }).willAnswer { getCountryInfoAction() }
         }
-        viewModel = CountryDetailsViewModel("", TestCoroutineScope(SupervisorJob()), countriesService)
+        viewModel = CountryDetailsViewModel(
+            countryCode = "",
+            scope = TestCoroutineScope(),
+            countriesService = countriesService
+        )
     }
 
     @After
@@ -53,7 +55,9 @@ class CountryDetailsViewModelTest : KoinTest {
     }
 
     @Test
-    fun `fetch info happy path`() = runBlockingTest {
+    fun `Fetch info happy path`() = runBlockingTest {
+        getCountryInfoAction = { countryStub }
+
         viewModel.state.test {
             assertThat(awaitItem().isLoading).isFalse()
 
@@ -76,6 +80,27 @@ class CountryDetailsViewModelTest : KoinTest {
                         languages = countryStub.languages.map { it.name!! },
                         phone = countryStub.phone
                     )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `Fetch info error`() = runBlockingTest {
+        getCountryInfoAction = { throw Exception() }
+
+        viewModel.state.test {
+            assertThat(awaitItem().isLoading).isFalse()
+
+            viewModel.handleAction(CountryDetailsAction.FetchInfo)
+
+            assertThat(awaitItem().isLoading).isTrue()
+
+            assertThat(awaitItem()).isEqualTo(
+                CountryDetailsState(
+                    isLoading = false,
+                    error = true,
+                    country = null
                 )
             )
         }

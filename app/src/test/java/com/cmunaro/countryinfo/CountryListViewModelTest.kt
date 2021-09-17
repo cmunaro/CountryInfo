@@ -27,6 +27,8 @@ import kotlin.time.ExperimentalTime
 class CountryListViewModelTest : KoinTest {
     private lateinit var countriesService: CountriesService
     private lateinit var viewModel: CountryListViewModel
+    private var getCountriesAction: () -> List<GetCountriesQuery.Country> = { stubCountries }
+    private var getContinentsAction: () -> List<GetContinentsQuery.Continent> = { stubContinents }
 
     @get:Rule
     val coroutineRule = MainCoroutineRule()
@@ -38,8 +40,8 @@ class CountryListViewModelTest : KoinTest {
             mock(it.java)
         }
         countriesService = declareMock {
-            given(runBlocking { getCountries() }).willReturn(stubCountries)
-            given(runBlocking { getContinents() }).willReturn(stubContinents)
+            given(runBlocking { getCountries() }).willAnswer { getCountriesAction() }
+            given(runBlocking { getContinents() }).willAnswer { getContinentsAction() }
         }
         viewModel = CountryListViewModel(TestCoroutineScope(SupervisorJob()), countriesService)
     }
@@ -61,8 +63,58 @@ class CountryListViewModelTest : KoinTest {
             assertThat(awaitItem()).isEqualTo(
                 CountryListScreenState(
                     isLoading = false,
+                    error = false,
                     fetchedCountries = stubCountries,
                     filteredCountries = countriesSortedByName,
+                    filterName = "",
+                    continentFilters = continentsFilter
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `loading continents error`() = runBlockingTest {
+        getContinentsAction = { throw Exception() }
+
+        viewModel.state.test {
+            assertThat(awaitItem().isLoading).isFalse()
+
+            viewModel.handleAction(CountryListAction.FetchCountries)
+
+            assertThat(awaitItem().isLoading).isTrue()
+
+            assertThat(awaitItem()).isEqualTo(
+                CountryListScreenState(
+                    isLoading = false,
+                    error = true,
+                    fetchedCountries = stubCountries,
+                    filteredCountries = countriesSortedByName,
+                    filterName = "",
+                    continentFilters = emptyList()
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `loading countries error`() = runBlockingTest {
+        getCountriesAction = { throw Exception() }
+
+        viewModel.state.test {
+            assertThat(awaitItem().isLoading).isFalse()
+
+            viewModel.handleAction(CountryListAction.FetchCountries)
+
+            assertThat(awaitItem().isLoading).isTrue()
+
+            val asd = awaitItem()
+            assertThat(asd).isEqualTo(
+                CountryListScreenState(
+                    isLoading = false,
+                    error = true,
+                    fetchedCountries = emptyList(),
+                    filteredCountries = emptyList(),
                     filterName = "",
                     continentFilters = continentsFilter
                 )
