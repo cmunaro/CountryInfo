@@ -18,12 +18,7 @@ class CountryDetailsScreenTest {
 
     @Test
     fun countryDetailsScreenMainContent() {
-        composeTestRule.setContent {
-            CountryDetailsScreen(
-                handleAction = {},
-                viewModelStateFlow = MutableStateFlow(dummyCountryDetailsState)
-            )
-        }
+        setContent()
 
         composeTestRule
             .onNodeWithText("Italy (IT)")
@@ -47,12 +42,7 @@ class CountryDetailsScreenTest {
 
     @Test
     fun toggleCard() {
-        composeTestRule.setContent {
-            CountryDetailsScreen(
-                viewModelStateFlow = MutableStateFlow(dummyCountryDetailsState),
-                handleAction = {}
-            )
-        }
+        setContent()
 
         composeTestRule
             .onNodeWithText("Rome")
@@ -71,6 +61,49 @@ class CountryDetailsScreenTest {
         composeTestRule
             .onNodeWithText("Rome")
             .assertDoesNotExist()
+    }
+
+    @Test
+    fun errorState() {
+        setContent(error = true)
+
+        composeTestRule
+            .onNodeWithText("Something went wrong")
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText("Retry")
+            .assertIsDisplayed()
+        composeTestRule
+            .onNodeWithText("Italy (IT)")
+            .assertDoesNotExist()
+        composeTestRule
+            .onNodeWithText("Continent")
+            .assertDoesNotExist()
+        composeTestRule
+            .onNodeWithText("Capital")
+            .assertDoesNotExist()
+        composeTestRule
+            .onNodeWithText("Currency")
+            .assertDoesNotExist()
+        composeTestRule
+            .onNodeWithText("Language")
+            .assertDoesNotExist()
+        composeTestRule
+            .onNodeWithText("Phone")
+            .assertDoesNotExist()
+    }
+
+    private fun setContent(error: Boolean = false) {
+        composeTestRule.setContent {
+            CountryDetailsScreen(
+                viewModelStateFlow = MutableStateFlow(
+                    dummyCountryDetailsState.copy(
+                        error = error
+                    )
+                ),
+                handleAction = {}
+            )
+        }
     }
 }
 

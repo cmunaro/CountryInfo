@@ -68,12 +68,13 @@ class CountryListScreenTest {
         setScreen(error = true)
 
         composeTestRule
-            .onNodeWithText("Country name")
+            .onNodeWithText("Something went wrong")
+            .assertIsDisplayed()
         composeTestRule
             .onNodeWithText("Retry")
             .assertIsDisplayed()
         composeTestRule
-            .onNodeWithText("name filter")
+            .onNodeWithText("Country name")
             .assertDoesNotExist()
         composeTestRule
             .onNodeWithText("Asie")

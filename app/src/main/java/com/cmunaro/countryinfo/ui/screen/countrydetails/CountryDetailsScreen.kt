@@ -6,8 +6,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
-import com.cmunaro.countryinfo.ui.screen.countrydetails.CountryDetailsAction.FetchInfo
 import com.cmunaro.countryinfo.ui.screen.countrydetails.components.CountryInfo
+import com.cmunaro.countryinfo.ui.shared.GenericError
 import com.cmunaro.countryinfo.ui.shared.Loading
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,10 +19,15 @@ fun CountryDetailsScreen(
 ) {
     val state by viewModelStateFlow.collectAsState()
     LaunchedEffect(Unit) {
-        handleAction(FetchInfo)
+        handleAction(CountryDetailsAction.FetchInfo)
     }
-    state.country?.let { country ->
-        CountryInfo(country = country)
+
+    if (state.error) {
+        GenericError { handleAction(CountryDetailsAction.FetchInfo) }
+    } else {
+        state.country?.let { country ->
+            CountryInfo(country = country)
+        }
     }
     if (state.isLoading) {
         Loading()
