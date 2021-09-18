@@ -1,4 +1,4 @@
-package com.cmunaro.countryinfo.ui.screen.countrylist
+package com.cmunaro.countryinfo.ui.screen.countrylist.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,17 +12,21 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction.Companion.Search
 import androidx.compose.ui.text.input.KeyboardType
 import com.cmunaro.countryinfo.R
+
+const val TAG_TEXT_FIELD_COUNTRY_NAME_FILTER = "text field country name filter"
 
 @Composable
 fun NameInputFilter(filter: String, onChange: (String) -> Unit, onClear: () -> Unit) {
     val focusManager = LocalFocusManager.current
     TextField(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .testTag(TAG_TEXT_FIELD_COUNTRY_NAME_FILTER),
         singleLine = true,
         value = filter,
         onValueChange = onChange,

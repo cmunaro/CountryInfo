@@ -11,6 +11,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.cmunaro.countryinfo.ui.screen.countrylist.components.ContinentFilter
 import com.cmunaro.countryinfo.ui.screen.countrylist.components.CountryList
+import com.cmunaro.countryinfo.ui.screen.countrylist.components.NameInputFilter
 import com.cmunaro.countryinfo.ui.shared.GenericError
 import com.cmunaro.countryinfo.ui.shared.Loading
 import kotlinx.coroutines.flow.MutableStateFlow
