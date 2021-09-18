@@ -1,14 +1,15 @@
 package com.cmunaro.countryinfo.ui.screen.countrylist
 
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
-import com.apollographql.apollo.exception.ApolloException
 import com.cmunaro.countryinfo.GetContinentsQuery
 import com.cmunaro.countryinfo.GetCountriesQuery
 import com.cmunaro.countryinfo.data.CountriesService
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class CountryListViewModel(
     private val scope: CoroutineScope,
@@ -57,8 +58,6 @@ class CountryListViewModel(
         null
     }
 
-
-    @Stable
     private fun changeNameFilter(filter: String) {
         _state.value = _state.value.copy(
             filterName = filter,
@@ -66,7 +65,6 @@ class CountryListViewModel(
         )
     }
 
-    @Stable
     private fun clearNameFilter() {
         _state.value = _state.value.copy(
             filterName = "",
@@ -74,7 +72,6 @@ class CountryListViewModel(
         )
     }
 
-    @Stable
     private fun toggleFilter(filterToBeToggled: ContinentFilterEntry) {
         val newFilters = _state.value.continentFilters
             .map {
@@ -120,19 +117,19 @@ sealed interface CountryListAction {
     data class ToggleContinentFilter(val filter: ContinentFilterEntry) : CountryListAction
 }
 
-@Stable
+@Immutable
 data class CountryListDefinition(
     val name: String,
     val countryCode: String
 )
 
-@Stable
+@Immutable
 data class ContinentFilterEntry(
     val name: String,
     val enable: Boolean = true
 )
 
-@Stable
+@Immutable
 data class CountryListScreenState(
     val isLoading: Boolean = false,
     val error: Boolean = false,

@@ -1,9 +1,7 @@
 package com.cmunaro.countryinfo.ui.screen.countrydetails
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
-import com.apollographql.apollo.exception.ApolloException
 import com.cmunaro.countryinfo.GetCountryInfoQuery
 import com.cmunaro.countryinfo.data.CountriesService
 import kotlinx.coroutines.CoroutineScope
@@ -74,7 +72,7 @@ data class CountryDefinition(
     val phone: String
 )
 
-@Stable
+@Immutable
 data class CountryDetailsState(
     val isLoading: Boolean = false,
     val error: Boolean = false,
